@@ -16,10 +16,10 @@ spec:
   image: {{ image }}
   port: 3000
   liveness:
-    path: tms-dokumentarkiv-redirect/api/internal/isAlive
+    path: /mine-saker/api/internal/isAlive
     initialDelay: 10
   readiness:
-    path: /tms-dokumentarkiv-redirect/api/internal/isReady
+    path: /mine-saker/api/internal/isReady
     initialDelay: 10
   replicas:
     min: 2
@@ -30,8 +30,8 @@ spec:
         - application: nav-dekoratoren
           namespace: personbruker
   ingresses:
-    - "https://www.intern.dev.nav.no/tms-dokumentarkiv-redirect"
-    - "https://www.ansatt.dev.nav.no/tms-dokumentarkiv-redirect"
+    - "https://www.intern.dev.nav.no/mine-saker"
+    - "https://www.ansatt.dev.nav.no/mine-saker"
   resources:
     limits:
       memory: 768Mi
