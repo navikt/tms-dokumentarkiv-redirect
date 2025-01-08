@@ -1,0 +1,7 @@
+---
+const params = Astro.params;
+const tema = params.temakode ? params.temakode : null;
+const journalpostId = params.journalpostId ? params.journalpostId : null;
+
+return Astro.redirect(`https://www.nav.no/dokumentarkiv/${tema}/${journalpostId}`);
+---

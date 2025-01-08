@@ -1,7 +1,7 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: tms-astro-template
+  name: tms-dokumentarkiv-redirect
   namespace: min-side
   labels:
     team: min-side
@@ -16,10 +16,10 @@ spec:
   image: {{ image }}
   port: 3000
   liveness:
-    path: /tms-astro-template/api/internal/isAlive
+    path: /mine-saker/api/internal/isAlive
     initialDelay: 10
   readiness:
-    path: /tms-astro-template/api/internal/isReady
+    path: /mine-saker/api/internal/isReady
     initialDelay: 10
   replicas:
     min: 2
@@ -30,7 +30,7 @@ spec:
         - application: nav-dekoratoren
           namespace: personbruker
   ingresses:
-    - "https://www.nav.no/tms-astro-template"
+    - "https://person.nav.no/mine-saker"
   resources:
     limits:
       memory: 768Mi

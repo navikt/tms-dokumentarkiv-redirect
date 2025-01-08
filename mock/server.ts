@@ -12,7 +12,7 @@ api.use("/*", cors({
   credentials: true,
 }));
 
-api.get('/api/tms-astro-template', (c) => {
+api.get('/api/tms-dokumentarkiv-redirect', (c) => {
   return c.json(example);
 });
 

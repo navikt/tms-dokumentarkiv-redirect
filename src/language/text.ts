@@ -1,8 +1,8 @@
 export const text = {
   title: {
-    nb: "Norsk bokmål tms-astro-template",
-    en: "English tms-astro-template",
-    nn: "Norsk nynorsk tms-astro-template",
+    nb: "Norsk bokmål tms-dokumentarkiv-redirect",
+    en: "English tms-dokumentarkiv-redirect",
+    nn: "Norsk nynorsk tms-dokumentarkiv-redirect",
   },
   name: {
     nb: "Navn",
