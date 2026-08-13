@@ -2,7 +2,8 @@
 
 En liten Node.js-tjeneste som videresender gamle Mine saker-lenker til dokumentarkivet.
 
-Tjenesten bruker bare innebygde Node.js-API-er. Den har ingen npm-avhengigheter, byggesteg eller frontend.
+Tjenesten bruker Node.js og `@navikt/oasis`. Den har ikke noe byggesteg eller
+frontend.
 
 ## Ruter
 
@@ -19,15 +20,17 @@ Helsesjekkene er tilgjengelige på:
 - `/mine-saker/api/internal/isAlive`
 - `/mine-saker/api/internal/isReady`
 
-ID-porten-autentisering håndteres av Nais-sidecaren. Den lokale Node.js-prosessen gjør derfor ingen tokenvalidering.
+Nais-sidecaren håndterer innlogging med ID-porten. Node.js-prosessen validerer
+ID-porten-tokenet med `@navikt/oasis` før den videresender brukeren.
 
 ## Lokal utvikling
 
-Krever Node.js 24 eller nyere.
+Krever Node.js 24 eller nyere og tilgang til Navs GitHub Packages-register.
 
 ```sh
-npm test
-npm start
+NODE_AUTH_TOKEN=<github-token> pnpm install
+pnpm test
+pnpm start
 ```
 
 Tjenesten lytter på `http://localhost:3000` som standard. Porten kan endres med miljøvariabelen `PORT`.
@@ -35,12 +38,14 @@ Tjenesten lytter på `http://localhost:3000` som standard. Porten kan endres med
 Eksempel:
 
 ```sh
-curl -I http://localhost:3000/mine-saker/tema/dagpenger
+curl -I http://localhost:3000/mine-saker/api/internal/isAlive
 ```
 
 ## Deployment
 
-GitHub Actions kjører den innebygde Node.js-testpakken, bygger Docker-imaget og deployer med Nais. Docker-imaget kopierer bare `server.mjs`; ingen pakkeinstallasjon eller applikasjonsbygging er nødvendig.
+GitHub Actions installerer avhengigheter med `READER_TOKEN`, kjører testene,
+bygger Docker-imaget og deployer med Nais. Imaget inneholder `server.mjs` og
+de ferdig installerte runtime-avhengighetene.
 
 ## Henvendelser
 

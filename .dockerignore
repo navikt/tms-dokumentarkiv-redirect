@@ -1,3 +1,6 @@
 *
 !Dockerfile
+!package.json
 !server.mjs
+!node_modules/
+!node_modules/**

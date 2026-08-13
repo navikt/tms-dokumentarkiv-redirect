@@ -90,13 +90,45 @@ const resolveRequest = (request) => {
     return { statusCode: 404 };
   }
 
-  return { statusCode: 302, headers: { location: destination } };
+  return {
+    statusCode: 302,
+    headers: { location: destination },
+    requiresAuthentication: true,
+  };
 };
 
-export const createRequestListener = () => (request, response) => {
-  const result = resolveRequest(request);
-  sendEmptyResponse(response, result.statusCode, result.headers);
+const authenticateWithIdporten = async (request) => {
+  const { getToken, validateIdportenToken } = await import("@navikt/oasis");
+  const token = getToken(request);
+
+  if (!token) {
+    return false;
+  }
+
+  const validation = await validateIdportenToken(token);
+  return validation.ok === true;
 };
+
+export const createRequestListener =
+  ({ authenticate = authenticateWithIdporten } = {}) =>
+  async (request, response) => {
+    const result = resolveRequest(request);
+
+    if (result.requiresAuthentication) {
+      try {
+        if (!(await authenticate(request))) {
+          sendEmptyResponse(response, 401, { "www-authenticate": "Bearer" });
+          return;
+        }
+      } catch {
+        console.error("ID-porten token validation failed unexpectedly");
+        sendEmptyResponse(response, 500);
+        return;
+      }
+    }
+
+    sendEmptyResponse(response, result.statusCode, result.headers);
+  };
 
 export const createServer = () => createHttpServer(createRequestListener());
 
