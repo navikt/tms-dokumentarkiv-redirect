@@ -21,7 +21,10 @@ Helsesjekkene er tilgjengelige på:
 - `/mine-saker/api/internal/isReady`
 
 Nais-sidecaren håndterer innlogging med ID-porten. Node.js-prosessen validerer
-ID-porten-tokenet med `@navikt/oasis` før den videresender brukeren.
+tokenet med `@navikt/oasis` før den videresender brukeren. Manglende eller
+ugyldige tokens sendes til Wonderwalls innloggingsendepunkt med opprinnelig
+path og query som redirect-mål. Autentisering hoppes over når
+`NODE_ENV=development`.
 
 ## Lokal utvikling
 

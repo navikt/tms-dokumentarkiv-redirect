@@ -105,18 +105,55 @@ describe("health routes", () => {
 });
 
 describe("authentication", () => {
-  test("returns 401 when the token is missing", async () => {
+  test("redirects to login when the token is missing", async () => {
     const response = await request("/mine-saker", "GET", null);
 
-    assert.equal(response.statusCode, 401);
-    assert.equal(response.headers["www-authenticate"], "Bearer");
+    assert.equal(response.statusCode, 302);
+    assert.equal(
+      response.headers.location,
+      "/mine-saker/oauth2/login?redirect=/mine-saker",
+    );
   });
 
-  test("returns 401 when the token is invalid", async () => {
+  test("redirects to login when the token is invalid", async () => {
     const response = await request("/mine-saker", "GET", "invalid-token");
 
-    assert.equal(response.statusCode, 401);
-    assert.equal(response.headers["www-authenticate"], "Bearer");
+    assert.equal(response.statusCode, 302);
+    assert.equal(
+      response.headers.location,
+      "/mine-saker/oauth2/login?redirect=/mine-saker",
+    );
+  });
+
+  test("preserves pathname and encoded query in the login redirect", async () => {
+    const response = await request(
+      "/mine-saker/tema/dagpenger?from=legacy&show=all",
+      "GET",
+      null,
+    );
+
+    assert.equal(response.statusCode, 302);
+    assert.equal(
+      response.headers.location,
+      "/mine-saker/oauth2/login?redirect=/mine-saker/tema/dagpenger%3Ffrom%3Dlegacy%26show%3Dall",
+    );
+  });
+
+  test("skips authentication in development", async () => {
+    const developmentListener = createRequestListener({
+      authenticate: async () => false,
+      isDevelopment: true,
+    });
+
+    const response = await request(
+      "/mine-saker",
+      "GET",
+      null,
+      developmentListener,
+    );
+
+    assert.equal(response.statusCode, 302);
+    assert.equal(response.headers.location, "https://www.nav.no/dokumentarkiv");
   });
 
   test("returns 500 when token validation fails unexpectedly", async (t) => {

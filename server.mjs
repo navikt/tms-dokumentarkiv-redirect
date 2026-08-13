@@ -6,6 +6,7 @@ const DESTINATION_BASE_URL = "https://www.nav.no/dokumentarkiv";
 const ALLOWED_METHODS = new Set(["GET", "HEAD"]);
 const HEALTH_ENDPOINTS = new Set(["isAlive", "isReady"]);
 const BASE_PATH_SEGMENTS = BASE_PATH.split("/").slice(1);
+const LOGIN_PATH = `${BASE_PATH}/oauth2/login`;
 
 const sendEmptyResponse = (response, statusCode, headers = {}) => {
   response.writeHead(statusCode, {
@@ -97,27 +98,38 @@ const resolveRequest = (request) => {
   };
 };
 
-const authenticateWithIdporten = async (request) => {
-  const { getToken, validateIdportenToken } = await import("@navikt/oasis");
+const authenticateWithOasis = async (request) => {
+  const { getToken, validateToken } = await import("@navikt/oasis");
   const token = getToken(request);
 
   if (!token) {
     return false;
   }
 
-  const validation = await validateIdportenToken(token);
+  const validation = await validateToken(token);
   return validation.ok === true;
 };
 
+const buildLoginUrl = (requestUrl) => {
+  const url = new URL(requestUrl ?? "/", "http://localhost");
+  const redirect = `${url.pathname}${encodeURIComponent(url.search)}`;
+  return `${LOGIN_PATH}?redirect=${redirect}`;
+};
+
 export const createRequestListener =
-  ({ authenticate = authenticateWithIdporten } = {}) =>
+  ({
+    authenticate = authenticateWithOasis,
+    isDevelopment = process.env.NODE_ENV === "development",
+  } = {}) =>
   async (request, response) => {
     const result = resolveRequest(request);
 
-    if (result.requiresAuthentication) {
+    if (result.requiresAuthentication && !isDevelopment) {
       try {
         if (!(await authenticate(request))) {
-          sendEmptyResponse(response, 401, { "www-authenticate": "Bearer" });
+          sendEmptyResponse(response, 302, {
+            location: buildLoginUrl(request.url),
+          });
           return;
         }
       } catch {
