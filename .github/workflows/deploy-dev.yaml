@@ -13,23 +13,12 @@ jobs:
 
     steps:
       - uses: "actions/checkout@v4"
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-          run_install: false # Recommended if using actions/setup-node for caching
       - uses: "actions/setup-node@v4"
         with:
           node-version: 24
-          registry-url: "https://npm.pkg.github.com"
-          cache: "pnpm"
 
-      - name: "Install dependencies"
-        run: "pnpm install --config.minimum-release-age=10080 --frozen-lockfile"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
-
-      - name: "Build application"
-        run: "pnpm run build"
+      - name: "Test application"
+        run: "node --test"
 
       - name: "Build and push"
         uses: nais/docker-build-push@main

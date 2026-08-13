@@ -1,27 +1,49 @@
-# tms-dokumentarkiv-redirect IdPorten
+# tms-dokumentarkiv-redirect
 
-Dette er en AstroJS frontend template med IdPorten autentisering for eksterne brukere.
+En liten Node.js-tjeneste som videresender gamle Mine saker-lenker til dokumentarkivet.
 
-# Kom i gang
+Tjenesten bruker bare innebygde Node.js-API-er. Den har ingen npm-avhengigheter, byggesteg eller frontend.
 
-## Tilpasse templatet til ditt prosjekt
+## Ruter
 
-`CMD + Shift + F` og søk etter `tms-dokumentarkiv-redirect` og erstatt dette med ditt applikasjons navn.
+| Fra | Til |
+| --- | --- |
+| `/mine-saker` | `https://www.nav.no/dokumentarkiv` |
+| `/mine-saker/tema/:temakode` | `https://www.nav.no/dokumentarkiv/tema/:temakode` |
+| `/mine-saker/tema/:temakode/:journalpostId` | `https://www.nav.no/dokumentarkiv/tema/:temakode/:journalpostId` |
 
-NOTE: Du bør se på konteksten i filen du endrer.
+Alle videresendinger bruker HTTP 302.
 
+Helsesjekkene er tilgjengelige på:
 
-#  Kjøre appen lokalt
+- `/mine-saker/api/internal/isAlive`
+- `/mine-saker/api/internal/isReady`
 
-1. Installer dependencies: `npm i`
-2. Bygge tms-dokumentarkiv-redirect: `npm run build`
-3. Start hono mockserver: `npm run mock`
-4. Med mockserver kjørende i egen terminal, start appen: `npm run dev`
-4. Appen nås på http://localhost:4321/tms-dokumentarkiv-redirect
+ID-porten-autentisering håndteres av Nais-sidecaren. Den lokale Node.js-prosessen gjør derfor ingen tokenvalidering.
 
-# Henvendelser
+## Lokal utvikling
 
-Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på github.
+Krever Node.js 24 eller nyere.
 
-## For NAV-ansatte
-Interne henvendelser kan sendes via Slack i kanalen #team-personbruker.
+```sh
+npm test
+npm start
+```
+
+Tjenesten lytter på `http://localhost:3000` som standard. Porten kan endres med miljøvariabelen `PORT`.
+
+Eksempel:
+
+```sh
+curl -I http://localhost:3000/mine-saker/tema/dagpenger
+```
+
+## Deployment
+
+GitHub Actions kjører den innebygde Node.js-testpakken, bygger Docker-imaget og deployer med Nais. Docker-imaget kopierer bare `server.mjs`; ingen pakkeinstallasjon eller applikasjonsbygging er nødvendig.
+
+## Henvendelser
+
+Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på GitHub.
+
+For Nav-ansatte kan interne henvendelser sendes i Slack-kanalen `#team-personbruker`.

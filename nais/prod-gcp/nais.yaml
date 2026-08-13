@@ -11,8 +11,6 @@ spec:
     sidecar:
       enabled: true
       level: Level3
-  tokenx:
-    enabled: true
   image: {{ image }}
   port: 3000
   liveness:
@@ -24,11 +22,6 @@ spec:
   replicas:
     min: 2
     max: 4
-  accessPolicy:
-    outbound:
-      rules:
-        - application: nav-dekoratoren
-          namespace: personbruker
   ingresses:
     - "https://person.nav.no/mine-saker"
   resources:
