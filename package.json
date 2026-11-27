@@ -8,7 +8,7 @@
     "node": ">=24"
   },
   "dependencies": {
-    "@navikt/oasis": "4.2.2"
+    "@navikt/oasis": "4.2.3"
   },
   "scripts": {
     "start": "node server.mjs",
